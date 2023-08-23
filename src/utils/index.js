@@ -1,3 +1,5 @@
+import { writeCookie } from "../common"
+
 export const registerUser = async (username, email, password) => {
     try {
         const response = await fetch("http://localhost:5001/users/register", {
@@ -33,9 +35,26 @@ export const loginUser = async (username, email, password, newUser) => {
         const data = await response.json()
         console.log(data)
         newUser(data.user.username)
+        writeCookie("jwt_token", data.user.token, 7)
 
     } catch (error) {
         console.log(error)
     }
 }
 
+export const authCheck = async (token) => {
+    try {   
+        const response = await fetch("http://localhost:5001/users/authCheck", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization":  token
+            }
+        })
+        const data = await response.json()
+        return data.user.username
+    } catch (error) {
+        console.log(error)
+    }
+
+}
